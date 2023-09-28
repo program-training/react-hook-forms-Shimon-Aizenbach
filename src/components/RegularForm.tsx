@@ -1,67 +1,42 @@
-import  { useState, ChangeEvent, FormEvent } from 'react';
-
-interface FormData {
-  username: string;
-  email: string;
-  password:string;
-}
+import "./RegularForm.css";
+import { useForm } from "react-hook-form";
 
 function RegularForm() {
-  const [formData, setFormData] = useState<FormData>({
-    username: '',
-    email: '',
-    password: '',
-  });
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    alert(JSON.stringify(formData));
-  };
+  const { register, handleSubmit, formState: { errors} } = useForm()
 
   return (
-    <form onSubmit={handleSubmit}>
-        <h1>Change Me To React Hook Form</h1>
+    <form onSubmit={handleSubmit((data) => console.log(data))}>
+      <h1>Change Me To React Hook Form</h1>
       <div>
         <input
-          type="text"
+        {...register(`userName`, {required: `User name is required`, minLength: {value: 2 , message: `You must enter at least two characters`}})}
           id="username"
-          name="username"
-          placeholder='Enter UserName'
-          value={formData.username}
-          onChange={handleChange}
+          placeholder="Enter UserName"
         />
-      </div>
+     </div>
+     <p>{errors.userName?.message as string}</p>
       <div>
         <input
-          type="text"
+          {...register(`email`, { required: `Email is required`, pattern: {value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, message: `Invalid email`} })}
+          type="email"
           id="email"
-          name="email"
-          placeholder='Enter Email'
-          value={formData.email}
-          onChange={handleChange}
+          placeholder="Enter Email"
         />
       </div>
+      <p>{errors.email?.message as string}</p>
       <div>
         <input
-          type="text"
+        {...register(`password`, { required: `Password is required`, pattern: {value: /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,20}$/, message: `Invalid password`} })}
+          type="password"
           id="password"
-          name="password"
-          placeholder='Enter Password'
-          value={formData.password}
-          onChange={handleChange}
+          placeholder="Enter Password"
         />
       </div>
+      <p>{errors.password?.message as string}</p>
       <button type="submit">Submit</button>
     </form>
   );
 }
 
 export default RegularForm;
+
